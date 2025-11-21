@@ -1,17 +1,21 @@
-const express = require("express");
+import express from "express";
+import path from "path";
+import fs from "fs";
+import { spawn } from "child_process";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const port = 3000;
-const path = require("path");
-const fs = require("fs");
-const { spawn } = require("child_process");
+const port = 3001;
 
 app.use(express.json());
-app.use(express.static("public"));
 
 const outputDir = path.join(__dirname, "downloads");
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
 
-app.post("/download", (req, res) => {
+app.post("/api/download", (req, res) => {
   const { url, type } = req.body;
 
   if (!url) return res.status(400).send("URL invalid!");
@@ -77,7 +81,7 @@ app.post("/download", (req, res) => {
   });
 });
 
-app.get("/downloaded-files", async (req, res) => {
+app.get("/api/downloaded-files", async (req, res) => {
   const dir = "./downloads";
   try {
     const files = await fs.promises.readdir(dir);
@@ -94,7 +98,7 @@ app.get("/downloaded-files", async (req, res) => {
   }
 });
 
-app.get("/get-down/:filename", (req, res) => {
+app.get("/api/get-down/:filename", (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, "downloads", filename);
 
@@ -111,4 +115,4 @@ app.get("/get-down/:filename", (req, res) => {
   res.download(filePath, filename);
 });
 
-app.listen(port, () => console.log("Server on!"));
+app.listen(port, "0.0.0.0", () => console.log("Server on!"));
