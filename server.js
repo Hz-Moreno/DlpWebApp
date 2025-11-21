@@ -76,7 +76,7 @@ app.post("/api/download", (req, res) => {
       });
     } catch (err) {
       console.log(err);
-      res.status(500).sen("Internal error!");
+      res.status(500).send("Internal error!");
     }
   });
 });
@@ -89,7 +89,7 @@ app.get("/api/downloaded-files", async (req, res) => {
 
     for (const file of files) {
       const content = await fs.promises.readFile(path.join(dir, file), "utf-8");
-      fileContents.push({ name: file, content });
+      fileContents.push({ name: file, content: [] });
     }
 
     res.json(fileContents);

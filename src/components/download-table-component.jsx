@@ -21,7 +21,7 @@ export default function DownloadsTable({ files }) {
 
                 <td class="px-4 py-4 text-right">
                   <a
-                    href={`/get-down/${encodeURIComponent(file.name)}`}
+                    href={`/api/get-down/${encodeURIComponent(file.name)}`}
                     class="text-amber-600 hover:text-amber-800 text-sm font-medium"
                   >
                     Baixar

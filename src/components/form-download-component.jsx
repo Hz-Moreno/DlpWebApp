@@ -3,17 +3,25 @@ import { useState } from "preact/hooks";
 export default function Downloader({ onDownload }) {
   const [url, setUrl] = useState("");
   const [type, setType] = useState("mp3");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function execDownload() {
-    const response = await fetch("/api/download", {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify({ url, type }),
-    });
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/download", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ url, type }),
+      });
 
-    if (!response.ok) return alert("Erro ao baixar");
+      if (!response.ok) return alert("Erro ao baixar");
 
-    onDownload();
+      onDownload();
+    } catch (err) {
+      alert(err);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -37,10 +45,37 @@ export default function Downloader({ onDownload }) {
         </select>
 
         <button
+          disable={isLoading}
           onClick={execDownload}
           class="rounded-lg bg-amber-500 px-8 py-3 font-semibold text-white hover:bg-amber-600 transition"
         >
-          BAIXAR
+          {isLoading ? (
+            <>
+              <svg
+                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Processando...
+            </>
+          ) : (
+            "BAIXAR"
+          )}
         </button>
       </div>
     </>
