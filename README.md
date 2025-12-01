@@ -1,15 +1,23 @@
-# `create-preact`
+# DLPWEBAPP
 
-<h2 align="center">
-  <img height="256" width="256" src="./src/assets/preact.svg">
-</h2>
+A lightweight web-based wrapper around **yt-dlp**, built with
+**Express** for the backend and **Preact** for the frontend. This
+project exposes a simple API and interface for downloading videos using
+yt-dlp.
 
-<h3 align="center">Get started using Preact and Vite!</h3>
+## Features
 
-## Getting Started
+-   Web interface built with Preact\
+-   Fast backend powered by Node.js and Express\
+-   Simple API endpoints to trigger downloads\
+-   Files saved locally (configurable)\
+-   Requires only **yt-dlp** installed on the system
 
--   `npm run dev` - Starts a dev server at http://localhost:5173/
+## Requirements
 
--   `npm run build` - Builds for production, emitting to `dist/`
+Install the following before running the project:
 
--   `npm run preview` - Starts a server at http://localhost:4173/ to test production build locally
+### yt-dlp
+
+Download and install from the official repository:\
+https://github.com/yt-dlp/yt-dlp
