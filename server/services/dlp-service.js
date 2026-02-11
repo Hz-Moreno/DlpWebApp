@@ -24,7 +24,6 @@ export class DLPService {
 
   setOutputTemplate() {
     const outputTemplate = path.join(this.#output_dir, "%(title)s.%(ext)s");
-
     this.#output_template = outputTemplate;
   }
 
@@ -68,11 +67,31 @@ export class DLPService {
     if (!args) throw new Error("Invalid downlaod args");
 
     return new Promise((resolve, reject) => {
-      const proc = spawn("yt-dlp", [...args, "-newline"]);
+      const proc = spawn("yt-dlp", [
+        ...args,
+        "--newline",
+        "--progress-template",
+        "progress:%(progress._percent_str)s",
+      ]);
 
-      proc.stdout.on("data", (data) => console.log(`[yt-dlp]: ${data}`));
+      proc.stdout.on("data", (data) => {
+        const output = data.toString();
+        const match = output.match(/progress:\s*([\d.]+)%/);
+
+        if (match) {
+          const percent = parseFloat(match[1]);
+          if (percent === 100) {
+            this.#downloads.set(id, { percent, status: "processing file" });
+          } else {
+            this.#downloads.set(id, { percent, status: "downloading" });
+          }
+          console.log(`[ID: ${id} progress: ${percent}%`);
+        }
+      });
+
       proc.on("close", (code) => {
         if (code === 0) {
+          this.#downloads.set(id, { percent: 100, status: "complete" });
           resolve({ success: true, message: "Download complete!" });
         } else {
           reject(new Error(`yt-dlp error code: ${code}`));
