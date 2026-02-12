@@ -1,6 +1,8 @@
 downloads
 queue
 
+.env
+
 # Logs
 logs
 *.log

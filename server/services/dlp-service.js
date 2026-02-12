@@ -57,6 +57,10 @@ export class DLPService {
       "-x",
       "--audio-format",
       "aac",
+      "--add-metadata",
+      "--embed-thumbnail",
+      "--metadata-from-title",
+      "%(artist)s - %(title)s",
     ];
 
     return args;
@@ -91,7 +95,10 @@ export class DLPService {
 
       proc.on("close", (code) => {
         if (code === 0) {
-          this.#downloads.set(id, { percent: 100, status: "complete" });
+          this.#downloads.set(id, {
+            percent: 100,
+            status: "ready_for_processing",
+          });
           resolve({ success: true, message: "Download complete!" });
         } else {
           reject(new Error(`yt-dlp error code: ${code}`));
