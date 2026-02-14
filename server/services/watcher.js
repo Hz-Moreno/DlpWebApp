@@ -2,8 +2,10 @@ import chokidar from "chokidar";
 import path from "path";
 import { getMetaData } from "./get-meta-data.js";
 import PQueue from "p-queue";
+import fs from "fs";
+import { loggerConfig as logger } from "../utils/logger.js";
 
-class Watcher {
+export default class Watcher {
   #pending_dir;
   #processed_dir;
   #queue;
@@ -42,13 +44,16 @@ class Watcher {
         : path.parse(fileName).name;
 
       const extension = path.extname(filePath);
-      const finalName = `${cleanName}${extension}`;
+      const finalPath = path.join(
+        this.#processed_dir,
+        `${cleanName}${extension}`,
+      );
 
-      this.moveFileToProcessedDir(finalName);
-    } catch (error) {}
-  }
+      await fs.promises.mkdir(this.#processed_dir, { recursive: true });
 
-  async moveFileToProcessedDir(filePath) {
-    await fs.rename(filePath, this.#processed_dir);
+      await fs.promises.rename(filePath, finalPath);
+    } catch (error) {
+      logger.error(`[ERRO] Falha ao processar ${fileName}:`, error);
+    }
   }
 }

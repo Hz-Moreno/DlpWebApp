@@ -1,8 +1,12 @@
-import { getFingerPrint } from "../../utils/fingerprint.js";
-import { lookupAcousticID } from "../../utils/acousticID.js";
-import { getCoverUrl } from "../../utils/coverart.js";
-import { getDuration } from "../../utils/content-duration.js";
-import { getBestRelease, getRecording } from "../../utils/musicbrainz.js";
+import { getFingerPrint } from "../../server/utils/fingerprint.js";
+import { lookupAcousticID } from "../../server/utils/acousticID.js";
+import { getCoverUrl } from "../../server/utils/coverart.js";
+import { getDuration } from "../../server/utils/content-duration.js";
+import {
+  getBestRelease,
+  getRecording,
+} from "../../server/utils/musicbrainz.js";
+import * as mm from "music-metadata";
 
 export async function getMetaData(filePath) {
   try {
@@ -14,8 +18,8 @@ export async function getMetaData(filePath) {
     if (fp) {
       const acousticData = await lookupAcousticID(fp);
       if (acousticData?.recordings?.length) {
-        const bestMatch = acousticData.recording[0];
-        const mbRecording = await getRecording(bestMatch);
+        const bestMatch = acousticData.recordings[0];
+        const mbRecording = await getRecording(bestMatch.id);
 
         if (mbRecording) {
           const bestRelease = getBestRelease(mbRecording.releases);

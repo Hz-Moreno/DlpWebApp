@@ -1,27 +1,37 @@
 import axios from "axios";
+import logger from "./logger.js";
 
-const email = "email@test.io";
+const email = process.env.PRINCIPAL_EMAIL;
 const headers = {
-  "Users-Agent": `AudioIdentifier/1.0 (${email})`,
+  "User-Agent": `AudioIdentifier/1.0 (${email})`,
 };
 
 export async function getRecording(mbid) {
-  const { data } = await axios.get(
-    `https://musicbrainz.org/ws/2/recording/${mbid}`,
-    {
-      params: {
-        fmt: "json",
-        inc: "artists+releases",
+  try {
+    const { data } = await axios.get(
+      `https://musicbrainz.org/ws/2/recording/${mbid}`,
+      {
+        params: {
+          fmt: "json",
+          inc: "artists+releases",
+        },
+        headers,
       },
-      headers,
-    },
-  );
+    );
 
-  return data;
+    return data;
+  } catch (error) {
+    logger.error(
+      { mbid, error: error.message },
+      "Error on get MusicBrainz data",
+    );
+    return null;
+  }
 }
 
 export async function getBestRelease(releases) {
+  if (!releases || releases.length === 0) return null;
   return releases
     .filter((r) => r.status === "Official")
-    .sort((a, b) => (a.data || "").localCompare(b.date || ""))[0];
+    .sort((a, b) => (a.date || "").localeCompare(b.date || ""))[0];
 }
